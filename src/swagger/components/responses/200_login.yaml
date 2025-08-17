@@ -1,0 +1,18 @@
+description: Successfully logged in a user
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Successfully logged in an user!
+        data:
+          type: object
+          properties:
+            accessToken:
+              type: string
+              example: r9wqKtpnl9nru2EsCSLcV4UTrTDK4rl7B8+ues5J8y0n4n6Mx8MzJveIDeVtX6ATBVA=

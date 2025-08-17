@@ -1,0 +1,22 @@
+type: object
+required:
+  - name
+  - email
+  - password
+properties:
+  id:
+    type: string
+    description: DB generated unique MongoDB objectId identifier
+  name:
+    type: string
+    description: Username
+  email:
+    type: string
+    description: User Email address
+  password:
+    type: string
+    description: Password
+example:
+  name: John Doe
+  email: john.doe@gmail.com
+  password: password123456

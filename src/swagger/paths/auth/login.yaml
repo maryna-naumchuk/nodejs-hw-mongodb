@@ -1,0 +1,28 @@
+tags:
+  - Auth
+security: []
+summary: Login a user
+operationId: loginUser
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            description: User Email address
+          password:
+            type: string
+            description: Password
+        example:
+          email: john.doe@gmail.com
+          password: password123456
+responses:
+  '200':
+    $ref: ../../components/responses/200_login.yaml
+  '401':
+    $ref: ../../components/responses/401_login.yaml

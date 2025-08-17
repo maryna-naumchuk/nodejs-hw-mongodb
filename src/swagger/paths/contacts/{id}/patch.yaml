@@ -1,0 +1,42 @@
+tags:
+  - Contacts
+summary: Update contact by id.
+operationId: patchContact
+description: 'Updates one or more fields of a contact by ID'
+security:
+  - bearerAuth: []
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: string
+      example: 6845c90610219bf18b4d54f1
+requestBody:
+  description: Fields to update for the contact
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+          phoneNumber:
+            type: string
+          email:
+            type: string
+            format: email
+          isFavourite:
+            type: boolean
+          contactType:
+            type: string
+            enum: [work, home, personal]
+          photo:
+            type: string
+            format: binary
+responses:
+  '200':
+    $ref: ../../../components/responses/200_patched.yaml
+  '404':
+    $ref: ../../../components/responses/404_contact.yaml

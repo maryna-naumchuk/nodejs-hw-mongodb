@@ -1,0 +1,19 @@
+tags:
+  - Auth
+security: []
+summary: Log out user
+operationId: logoutUser
+parameters:
+  - name: Authorization
+    in: header
+    required: true
+    schema:
+      type: string
+    description: The token issued to the current user.
+responses:
+  '204':
+    description: No Content. Successfully logged out, cookies cleared.
+  '403':
+    $ref: ../../components/responses/403.yaml
+  '404':
+    $ref: ../../components/responses/404_session.yaml

@@ -1,0 +1,38 @@
+type: object
+required:
+  - _id
+  - userId
+  - name
+  - phoneNumber
+  - contactType
+properties:
+  _id:
+    description: "Contact's ID"
+    type: string
+    example: 6845c90610219bf18b4d54f1
+  name:
+    description: "Contact's name"
+    type: string
+    example: Daenerys Targaryen
+  phoneNumber:
+    description: "Contact's phone number. Should be in international format"
+    type: string
+    example: '78995212274'
+  email:
+    description: "Contact's email"
+    type: string
+    format: email
+    example: drogon@gmail.com
+  photo:
+    description: "Contact's avatar"
+    type: string
+    format: binary
+  isFavourite:
+    description: 'Indicates whether the contact is marked as a favorite.'
+    type: boolean
+    example: true
+  contactType:
+    description: "Contact's type"
+    type: string
+    enum: [work, home, personal]
+    example: home

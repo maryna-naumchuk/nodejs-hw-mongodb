@@ -1,0 +1,95 @@
+description: Successfully found contacts!
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Successfully found contacts!
+        result:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    example: '68406527eee740223c622d8a'
+                  userId:
+                    type: string
+                    example: '684065c4eee740223c622d92'
+                  name:
+                    type: string
+                    example: 'Daenerys Targaryen'
+                  phoneNumber:
+                    type: string
+                    example: '78995212274'
+                  email:
+                    type: string
+                    example: 'drogon@gmail.com'
+                  photo:
+                    type: string
+                    example: 'https://res.cloudinary.com/image/igq606n.avif'
+                  isFavourite:
+                    type: boolean
+                    example: false
+                  contactType:
+                    type: string
+                    enum:
+                      - work
+                      - home
+                      - personal
+                    example: work
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: '2025-06-09T19:49:37.155Z'
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    example: '2025-06-09T19:49:37.155Z'
+            page:
+              type: integer
+              example: 1
+            perPage:
+              type: integer
+              example: 10
+            totalItems:
+              type: integer
+              example: 4
+            totalPages:
+              type: integer
+              example: 1
+            hasPreviousPage:
+              type: boolean
+              example: false
+            hasNextPage:
+              type: boolean
+              example: false
+    example:
+      status: 200
+      message: Successfully found contacts!
+      result:
+        data:
+          - _id: '684065c4eee740223c622d92'
+            userId: '68406527eee740223c622d8a'
+            name: 'Daenerys Targaryen'
+            phoneNumber: '78995212274'
+            email: 'drogon@gmail.com'
+            isFavourite: true
+            contactType: 'home'
+            createdAt: '2025-06-04T15:27:00.426Z'
+            updatedAt: '2025-06-06T21:45:23.402Z'
+            photo: 'https://res.cloudinary.com/image/igq606n.avif'
+        page: 1
+        perPage: 10
+        totalItems: 4
+        totalPages: 1
+        hasPreviousPage: false
+        hasNextPage: false

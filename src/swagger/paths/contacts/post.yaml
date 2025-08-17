@@ -1,0 +1,51 @@
+tags:
+  - Contacts
+summary: Created contact
+operationId: createContact
+description: 'Create a contact'
+security:
+  - bearerAuth: []
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        required:
+          - name
+          - phoneNumber
+          - contactType
+        properties:
+          name:
+            type: string
+            description: "Contact's name"
+            example: 'Daenerys Targaryen'
+          phoneNumber:
+            type: string
+            description: "Contact's phone number"
+            example: '78995212274'
+          email:
+            type: string
+            description: "Contact's email address"
+            example: 'drogon@gmail.com'
+          photo:
+            type: string
+            description: "Contact's avatar"
+            format: binary
+          isFavourite:
+            type: boolean
+            description: 'Indicates if contact is marked as favourite'
+            default: false
+          contactType:
+            type: string
+            description: 'Type of the contact'
+            enum:
+              - work
+              - home
+              - personal
+            default: personal
+
+responses:
+  '201':
+    $ref: ../../components/responses/201_created.yaml
+  '401':
+    $ref: ../../components/responses/401.yaml

@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import { TTL } from '../constants/contacts.js';
 import {
   loginUser,
@@ -67,9 +68,11 @@ export const refreshUserSessionController = async (req, res) => {
 };
 
 export const logoutUserController = async (req, res) => {
-  if (req.cookies.sessionId) {
-    await logoutUser(req.cookies.sessionId);
+  if (!req.cookies.sessionId) {
+    throw createHttpError(403, 'Missing header with authorization token.');
   }
+
+  await logoutUser(req.cookies.sessionId);
 
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');

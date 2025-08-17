@@ -1,0 +1,18 @@
+description: Unauthorized - Invalid email or password
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 401
+        message:
+          type: string
+          example: Invalid email or password
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Invalid email or password
