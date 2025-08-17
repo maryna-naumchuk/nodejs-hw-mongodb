@@ -13,15 +13,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vlad-Rzaiev/nodejs-hw-mongodb.git"
+    "url": "git+https://github.com/Maryna-Naumchuk/nodejs-hw-mongodb.git"
   },
   "keywords": [],
-  "author": "Vlad Rzaiev <vlad.rzaev@gmail.com>",
+  "author": "Maryna Naumchuk <marin.naumch@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Vlad-Rzaiev/nodejs-hw-mongodb/issues"
+    "url": "https://github.com/Maryna-Naumchuk/nodejs-hw-mongodb/issues"
   },
-  "homepage": "https://github.com/Vlad-Rzaiev/nodejs-hw-mongodb#readme",
+  "homepage": "https://github.com/Maryna-Naumchuk/nodejs-hw-mongodb#readme",
   "description": "",
   "devDependencies": {
     "@eslint/js": "^9.26.0",
