@@ -9,11 +9,14 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { getAvatarUrl } from '../utils/getAvatarUrl.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
   const { isFavourite, type } = parseFilterParams(req.query);
+  const userId = req.user._id;
+
   const result = await getAllContacts({
     page,
     perPage,
@@ -21,6 +24,7 @@ export const getContactsController = async (req, res) => {
     sortOrder,
     isFavourite,
     type,
+    userId,
   });
 
   res.status(200).json({
@@ -32,7 +36,8 @@ export const getContactsController = async (req, res) => {
 
 export const getContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const result = await getContactById(contactId);
+  const userId = req.user._id;
+  const result = await getContactById(contactId, userId);
 
   if (result === null) {
     throw createHttpError(404, 'Contact not found!');
@@ -46,7 +51,14 @@ export const getContactByIdController = async (req, res) => {
 };
 
 export const createContactController = async (req, res) => {
-  const result = await createContact(req.body);
+  const avatarUrl = await getAvatarUrl(req.file);
+
+  const newContact = {
+    userId: req.user._id,
+    ...req.body,
+    ...(avatarUrl && { photo: avatarUrl }),
+  };
+  const result = await createContact(newContact);
 
   res.status(201).json({
     status: 201,
@@ -57,11 +69,18 @@ export const createContactController = async (req, res) => {
 
 export const patchContactController = async (req, res) => {
   const { contactId } = req.params;
-  const result = await patchContact(contactId, req.body);
+  const userId = req.user._id;
 
-  console.log(result);
+  const avatarUrl = await getAvatarUrl(req.file);
 
-  if (result === null) {
+  const payload = {
+    ...req.body,
+    ...(avatarUrl && { photo: avatarUrl }),
+  };
+
+  const result = await patchContact(contactId, payload, userId);
+
+  if (!result) {
     throw createHttpError(404, 'Contact not found!');
   }
 
@@ -74,11 +93,9 @@ export const patchContactController = async (req, res) => {
 
 export const deleteContactController = async (req, res) => {
   const { contactId } = req.params;
-  console.log(contactId);
+  const userId = req.user._id;
 
-  const result = await deleteContact(contactId);
-
-  console.log(result);
+  const result = await deleteContact(contactId, userId);
 
   if (result === null) {
     throw new createHttpError.NotFound('Contact not found!');
