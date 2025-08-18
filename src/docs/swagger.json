@@ -1,0 +1,1465 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Contacts API",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "description": "This is a documentation of contacts app"
+  },
+  "servers": [
+    {
+      "url": "https://contacts-6mor.onrender.com"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentication operations."
+    },
+    {
+      "name": "Contacts",
+      "description": "Operations about contacts."
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "summary": "Create a new user",
+        "operationId": "registerUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/201_register"
+          },
+          "409": {
+            "$ref": "#/components/responses/409"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "summary": "Login a user",
+        "operationId": "loginUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "User Email address"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "Password"
+                  }
+                },
+                "example": {
+                  "email": "john.doe@gmail.com",
+                  "password": "password123456"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_login"
+          },
+          "401": {
+            "$ref": "#/components/responses/401_login"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "summary": "Log out user",
+        "operationId": "logoutUser",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The token issued to the current user."
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content. Successfully logged out, cookies cleared."
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_session"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "summary": "Refresh user session",
+        "operationId": "refreshSession",
+        "description": "Refreshes user session using sessionId and refreshToken from cookies",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session ID stored in cookie"
+          },
+          {
+            "name": "refreshToken",
+            "in": "cookie",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Refresh token stored in cookie"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully refreshed session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully refreshed a session!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized or expired refresh token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not authorized, please log in!"
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/send-reset-email": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "summary": "Send reset password email",
+        "operationId": "sendResetEmail",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john.doe@gmail.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reset password email was successfully sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Reset password email was successfully sent!"
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not found!"
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to send the email",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 500
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Failed to send the email, please try again later."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/reset-pwd": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "security": [],
+        "summary": "Reset password",
+        "operationId": "resetPassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "token",
+                  "password"
+                ],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "JWT token",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "New password (must be different from current)",
+                    "minLength": 8,
+                    "maxLength": 30,
+                    "example": "newPassword123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password has been successfully reset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Password has been successfully reset."
+                    },
+                    "data": {
+                      "type": "object",
+                      "example": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "New password is the same as current",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 400
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "New password cannot be the same as the current password."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Bad Request"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token is expired or invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 401
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Token is expired or invalid."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Unauthorized"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "statusCode": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not found."
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Not Found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/contacts": {
+      "get": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Get list of contacts",
+        "operationId": "getContacts",
+        "description": "Get list of contacts with this endpoint",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination (default: 1)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "example": 1
+            }
+          },
+          {
+            "name": "perPage",
+            "in": "query",
+            "description": "Number of items per page (default: 10)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "example": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Field name to sort by (default: _id)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "name"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "Sort order direction",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "example": "asc"
+            }
+          },
+          {
+            "name": "isFavourite",
+            "in": "query",
+            "description": "Show contacts with favourite status only",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "example": true
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "Type of the contact (default: personal)",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "work",
+                "home",
+                "personal"
+              ],
+              "example": "personal"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_getAll"
+          },
+          "400": {
+            "$ref": "#/components/responses/400_invalidPerPage"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Created contact",
+        "operationId": "createContact",
+        "description": "Create a contact",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "phoneNumber",
+                  "contactType"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Contact's name",
+                    "example": "Daenerys Targaryen"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "description": "Contact's phone number",
+                    "example": "78995212274"
+                  },
+                  "email": {
+                    "type": "string",
+                    "description": "Contact's email address",
+                    "example": "drogon@gmail.com"
+                  },
+                  "photo": {
+                    "type": "string",
+                    "description": "Contact's avatar",
+                    "format": "binary"
+                  },
+                  "isFavourite": {
+                    "type": "boolean",
+                    "description": "Indicates if contact is marked as favourite",
+                    "default": false
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "description": "Type of the contact",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ],
+                    "default": "personal"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/201_created"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          }
+        }
+      }
+    },
+    "/contacts/{id}": {
+      "get": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Get contact by id.",
+        "operationId": "getContact",
+        "description": "Get contact by id.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "6845c90610219bf18b4d54f1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_getById"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_contact"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Update contact by id.",
+        "operationId": "patchContact",
+        "description": "Updates one or more fields of a contact by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "6845c90610219bf18b4d54f1"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Fields to update for the contact",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "phoneNumber": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "isFavourite": {
+                    "type": "boolean"
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ]
+                  },
+                  "photo": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/200_patched"
+          },
+          "404": {
+            "$ref": "#/components/responses/404_contact"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Contacts"
+        ],
+        "summary": "Delete contact by id",
+        "operationId": "deleteContact",
+        "description": "Delete contact by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "6845c90610219bf18b4d54f1"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content. Successful request with no body returned."
+          },
+          "404": {
+            "$ref": "#/components/responses/404_contact"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "user": {
+        "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "DB generated unique MongoDB objectId identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Username"
+          },
+          "email": {
+            "type": "string",
+            "description": "User Email address"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password"
+          }
+        },
+        "example": {
+          "name": "John Doe",
+          "email": "john.doe@gmail.com",
+          "password": "password123456"
+        }
+      },
+      "contact": {
+        "type": "object",
+        "required": [
+          "_id",
+          "userId",
+          "name",
+          "phoneNumber",
+          "contactType"
+        ],
+        "properties": {
+          "_id": {
+            "description": "Contact's ID",
+            "type": "string",
+            "example": "6845c90610219bf18b4d54f1"
+          },
+          "name": {
+            "description": "Contact's name",
+            "type": "string",
+            "example": "Daenerys Targaryen"
+          },
+          "phoneNumber": {
+            "description": "Contact's phone number. Should be in international format",
+            "type": "string",
+            "example": "78995212274"
+          },
+          "email": {
+            "description": "Contact's email",
+            "type": "string",
+            "format": "email",
+            "example": "drogon@gmail.com"
+          },
+          "photo": {
+            "description": "Contact's avatar",
+            "type": "string",
+            "format": "binary"
+          },
+          "isFavourite": {
+            "description": "Indicates whether the contact is marked as a favorite.",
+            "type": "boolean",
+            "example": true
+          },
+          "contactType": {
+            "description": "Contact's type",
+            "type": "string",
+            "enum": [
+              "work",
+              "home",
+              "personal"
+            ],
+            "example": "home"
+          }
+        }
+      }
+    },
+    "responses": {
+      "401": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "example": {
+              "status": 401,
+              "message": "Session not found",
+              "data": {
+                "message": "Session not found"
+              }
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Missing sessionId cookie (authorization token)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 403
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Missing header with authorization token."
+                }
+              }
+            }
+          }
+        }
+      },
+      "409": {
+        "description": "Email already in use",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 409
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Email in use"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Something went wrong."
+                }
+              }
+            }
+          }
+        }
+      },
+      "201_register": {
+        "description": "Successfully registered a user",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully registered a user!"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "Arya Stark"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "example": "arya@gmail.com"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "68485158b4197a8ecf3f6ccf"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-10T15:38:00.219Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-10T15:38:00.219Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "200_login": {
+        "description": "Successfully logged in a user",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully logged in an user!"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string",
+                      "example": "r9wqKtpnl9nru2EsCSLcV4UTrTDK4rl7B8+ues5J8y0n4n6Mx8MzJveIDeVtX6ATBVA="
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "401_login": {
+        "description": "Unauthorized - Invalid email or password",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 401
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid email or password"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid email or password"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "404_session": {
+        "description": "Session not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Session not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "200_getAll": {
+        "description": "Successfully found contacts!",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully found contacts!"
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "68406527eee740223c622d8a"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "example": "684065c4eee740223c622d92"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Daenerys Targaryen"
+                          },
+                          "phoneNumber": {
+                            "type": "string",
+                            "example": "78995212274"
+                          },
+                          "email": {
+                            "type": "string",
+                            "example": "drogon@gmail.com"
+                          },
+                          "photo": {
+                            "type": "string",
+                            "example": "https://res.cloudinary.com/image/igq606n.avif"
+                          },
+                          "isFavourite": {
+                            "type": "boolean",
+                            "example": false
+                          },
+                          "contactType": {
+                            "type": "string",
+                            "enum": [
+                              "work",
+                              "home",
+                              "personal"
+                            ],
+                            "example": "work"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-06-09T19:49:37.155Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-06-09T19:49:37.155Z"
+                          }
+                        }
+                      }
+                    },
+                    "page": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "perPage": {
+                      "type": "integer",
+                      "example": 10
+                    },
+                    "totalItems": {
+                      "type": "integer",
+                      "example": 4
+                    },
+                    "totalPages": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "hasPreviousPage": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "hasNextPage": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            },
+            "example": {
+              "status": 200,
+              "message": "Successfully found contacts!",
+              "result": {
+                "data": [
+                  {
+                    "_id": "684065c4eee740223c622d92",
+                    "userId": "68406527eee740223c622d8a",
+                    "name": "Daenerys Targaryen",
+                    "phoneNumber": "78995212274",
+                    "email": "drogon@gmail.com",
+                    "isFavourite": true,
+                    "contactType": "home",
+                    "createdAt": "2025-06-04T15:27:00.426Z",
+                    "updatedAt": "2025-06-06T21:45:23.402Z",
+                    "photo": "https://res.cloudinary.com/image/igq606n.avif"
+                  }
+                ],
+                "page": 1,
+                "perPage": 10,
+                "totalItems": 4,
+                "totalPages": 1,
+                "hasPreviousPage": false,
+                "hasNextPage": false
+              }
+            }
+          }
+        }
+      },
+      "400_invalidPerPage": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "example": {
+              "status": 400,
+              "message": "The 'perPage' value cannot be more than 100.",
+              "data": {
+                "message": "The 'perPage' value cannot be more than 100."
+              }
+            }
+          }
+        }
+      },
+      "201_created": {
+        "description": "Successfully created a contact!",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 201
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully created a contact!"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "example": "684065c4eee740223c622d92"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Daenerys Targaryen"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "example": "78995212274"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "drogon@gmail.com"
+                    },
+                    "photo": {
+                      "type": "string",
+                      "example": "https://res.cloudinary.com/image/igq606n.avif"
+                    },
+                    "isFavourite": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "contactType": {
+                      "type": "string",
+                      "enum": [
+                        "work",
+                        "home",
+                        "personal"
+                      ],
+                      "example": "work"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "68473ad103b06a16eacff7e4"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-09T19:49:37.155Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-09T19:49:37.155Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "200_getById": {
+        "description": "Get contact by id",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully found contact with id 6845c90610219bf18b4d54f1!"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "userId": {
+                      "type": "string",
+                      "example": "684065c4eee740223c622d92"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Daenerys Targaryen"
+                    },
+                    "phoneNumber": {
+                      "type": "string",
+                      "example": "78995212274"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "drogon@gmail.com"
+                    },
+                    "photo": {
+                      "type": "string",
+                      "example": "https://res.cloudinary.com/image/igq606n.avif"
+                    },
+                    "isFavourite": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "contactType": {
+                      "type": "string",
+                      "enum": [
+                        "work",
+                        "home",
+                        "personal"
+                      ],
+                      "example": "work"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "example": "68473ad103b06a16eacff7e4"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-09T19:49:37.155Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-06-09T19:49:37.155Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "404_contact": {
+        "description": "Contact not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "NotFoundError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Contact not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "200_patched": {
+        "description": "Successfully patched a contact",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 200
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Successfully patched a contact!"
+                },
+                "data": {
+                  "$ref": "#/components/schemas/contact"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
