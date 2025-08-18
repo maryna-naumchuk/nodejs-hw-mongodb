@@ -12,7 +12,7 @@ tags:
   - name: Contacts
     description: Operations about contacts.
 servers:
-  - url: https://contacts-6mor.onrender.com/api-docs
+  - url: https://contacts-4czw.onrender.com/api-docs
 paths:
   /auth/register:
     post:
